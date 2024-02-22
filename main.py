@@ -63,46 +63,46 @@ def enviarTweetBot(msgText):
         
         
         
-while True:
-    time.sleep(1800)        
+     
         
 
-    dayWeek = datetime.now().strftime('%A')
-    f = open('AnimeID.txt')
-    data = json.load(f)
-    f.close()
+dayWeek = datetime.now().strftime('%A')
+f = open('AnimeID.txt')
+data = json.load(f)
+f.close()
 
-    ########    Reset de Week_Release Monday a 6AM   ########
-    timeNow = datetime.now()
-    time6am = timeNow.replace(hour=6, minute=0, second=0, microsecond=0)
-    time7am = timeNow.replace(hour=7, minute=0, second=0, microsecond=0)
-    if(dayWeek == "Monday" and timeNow > time6am and timeNow < time7am):
-        for i in range(len(data)):
-            data[i]['Week_Released'] = "false"
-    ##########################################################
-
-
-
-
+########    Reset de Week_Release Monday a 6AM   ########
+timeNow = datetime.now()
+time6am = timeNow.replace(hour=6, minute=0, second=0, microsecond=0)
+time7am = timeNow.replace(hour=7, minute=0, second=0, microsecond=0)
+if(dayWeek == "Monday" and timeNow > time6am and timeNow < time7am):
     for i in range(len(data)):
-        if dayWeek == data[i]['Day'] and data[i]['Week_Released'] == "false":
-            print("En dia")
-            lastEP = getLastEP_AnimeFLV(data[i]['AnimeFLV_URL'])
-            if lastEP != data[i]['Current_EP']:
-                data[i]['Current_EP'] = lastEP
-                data[i]['Week_Released'] = "true"
-                print("Salio")
+        data[i]['Week_Released'] = "false"
+##########################################################
 
 
-                msgTwitter = f"El episodio {data[i]['Current_EP']}/{data[i]['Total_Ep']} de {data[i]['Anime']} salio. \n"
-                msgTwitter += f"{data[i]['Crunchy_URL']}"
+for i in range(len(data)):
+    if(data[i]['Week_Released'] == "false"):
+        data[i]['Week_Released'] = False
+        
+    if dayWeek == data[i]['Day'] and data[i]['Week_Released'] == False:
+        print("En dia")
+        lastEP = getLastEP_AnimeFLV(data[i]['AnimeFLV_URL'])
+        if lastEP != data[i]['Current_EP']:
+            data[i]['Current_EP'] = lastEP
+            data[i]['Week_Released'] = "true"
+            print("Salio")
 
-                enviarTweetBot(msgTwitter)
 
-                jsonData = str(data).replace("'",'"')
-                jsonData = jsonData.replace('True','true')
-                jsonData = jsonData.replace('False','false')
-                f = open("AnimeID.txt", "w")
-                f.write(jsonData)
-                f.close()
+            msgTwitter = f"El episodio {data[i]['Current_EP']}/{data[i]['Total_Ep']} de {data[i]['Anime']} salio. \n"
+            msgTwitter += f"{data[i]['Crunchy_URL']}"
+
+            enviarTweetBot(msgTwitter)
+
+            jsonData = str(data).replace("'",'"')
+            jsonData = jsonData.replace('True','true')
+            jsonData = jsonData.replace('False','false')
+            f = open("AnimeID.txt", "w")
+            f.write(jsonData)
+            f.close()
     
